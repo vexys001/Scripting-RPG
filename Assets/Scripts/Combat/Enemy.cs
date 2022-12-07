@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour
 
     private void OnMouseDown()
     {
-        TakeDamage(Random.Range(12, 21));
+        TakeDamage(Random.Range(13, 21));
     }
 
     public void AssignElement(GlobalEnums.Elements toAssign, CombatManager newManager)
