@@ -1,0 +1,37 @@
+@startuml
+
+state "Main Menu" as MainMenu
+
+state "New Game" as NewGame
+NewGame: Start new game 
+
+state "Load Game" as LoadGame
+LoadGame: Load game 
+	
+[*] --> MainMenu
+
+MainMenu --> NewGame : Chose
+MainMenu --> LoadGame : Chose
+
+NewGame --> Ingame
+LoadGame --> Ingame
+
+MainMenu --> [*]
+
+state "In Game" as Ingame{
+	state GameMenu
+	state Exploration
+	state Combat
+
+	[*] --> Exploration
+
+	Combat --> Exploration
+
+	GameMenu --> Exploration
+	GameMenu --> MainMenu
+
+	Exploration --> Combat
+	Exploration --> GameMenu
+}
+
+@enduml

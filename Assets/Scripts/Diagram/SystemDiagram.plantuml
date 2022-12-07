@@ -1,0 +1,257 @@
+@startuml
+
+Package Tools{
+	Class ElementCalculator{
+		+ float CalculateElement(GlobalEnums.Elements, GlobalEnums.Elements)
+	}
+
+	Class GlobalEnums{
+		+ enum Elements
+	}
+
+	Class SavingManager{
+		+ void SaveGame()
+		+ void LoadSave()
+	}
+
+	Class EquipmentData{
+		+ int Health
+
+		+ bool FireUnlocked
+		+ bool WaterUnlocked
+		+ bool EarthUnlocked
+		+ bool ThunderUnlocked
+
+		+ int PotionNum
+		+ int SupPotionNum
+
+		+ EquipmentData(int, bool, bool, bool, bool, int, int)
+	}
+
+	Class QuestData{
+		+ int Step
+		+ int QuestCompleted
+
+		+ QuestData(int, int)
+	}
+
+	Class Singleton<T>{
+		{static} # T _instance 
+		{static} + T Instance 
+	}
+
+	SavingManager <|-- Singleton
+
+	SavingManager o-- EquipmentData
+	SavingManager o-- QuestData
+}
+
+Package Quest{
+	Class Quest{
+		+ QuestUIManager Manager
+		+ QuestSO CurrentQuest
+		+ int Step
+		+ int QuestCompleted
+
+		+ void LoadQuest(QuestData)
+		+ void StartQuest(QuestUIManager)
+		+ void StepQuest()
+	}
+
+	Class QuestSO{
+		+ string Text
+		+ int Steps
+	}
+
+	Class QuestUIManager{
+		+ TextMeshProUGUI QuestText
+		+ QuestSO[] QuestSO
+
+		+ void UpdateUI()
+	}
+
+	Class ScriptableObject
+
+	QuestSO <|-- ScriptableObject
+	Quest <|-- Singleton
+
+	Quest *-- QuestUIManager
+	QuestUIManager o-- QuestSO
+
+	Quest *-- QuestSO
+}
+
+Package Combat{
+	Class CombatManager{
+		+ enum CombatPhase
+		- CombatPhase combatState
+
+		+ GameObject[] EnemySpots
+		+ Sprite[] EnemySprite
+		+ ElementCalculator ElementCalc 
+
+		- int _enemyNum
+		- float _defenseMulti
+
+		# void StartCombat()
+		+ void EnemyDeath()
+		+ void Defending()
+
+		# void RunState()
+
+		# void EnterPlayerPhase()
+		# void RunPlayerPhase()
+		+ void ExitPlayerPhase()
+
+		# void EnterEnemyPhase()
+		# void RunEnemyPhase()
+		# void ExitPlayerPhase()
+
+		# void EnterResultPhase()
+		# void RunResultPhase()
+		# void ExitResultPhase()
+	}
+
+	Class CombatUIManager{
+		+ GameObject SwitchingPanel
+		+ GameObject ItemPanel
+
+		+ Image SwordImage
+		+ Sprite[] Swords
+
+		+ TextMeshProUGUI HealthTxt
+
+		+ void SwitchButton()
+		+ void ItemButton()
+		+ void QuitButton()
+
+		+ void UpdateHealthUI()
+
+		+ void FireButton()
+		+ void WaterButton()
+		+ void EarthButton()
+		+ void ThunderButton()
+
+		# void ChangeSwordSprite()
+
+		+ void PotButton()
+		+ void SuperPotButton()
+	}
+
+	Class Enemy{
+		- int _health
+		- GlobalEnums.Elements _element
+		- CombatManager _manager
+
+		+ bool switcher
+
+		+ void TakeDamage(int)
+		+ void AssignElement(GlobalEnums.Elements, CombatManager)
+		- void OnMouseDown()
+	}
+	
+	Enemy o-- CombatManager
+	Enemy o-- GlobalEnums
+	CombatManager o-- ElementCalculator
+}
+
+Class Avatar{
+	- bool _paused
+    + GameObject GameMenu
+
+	# void Movement()
+}
+
+Class Camera{
+	+ GameObject Tracking
+}
+
+Class Chest {
+	+ GlobalEnums.Elements SwordWithin
+
+	- void OnTriggerStay2D(Collider2D)
+}
+
+Class Door{
+	+ string DoorTo
+
+	- void OnTriggerStay2D(Collider2D)
+}
+
+Class EncounterManager{
+	- float _distanceToEnc
+
+	+ void Countdown(float)
+}
+
+EncounterManager <|-- Singleton
+
+Class Equipement{
+	+ GlobalEnums.Elements CurrentSwordElement
+
+    + int Health
+    - int _maxHealth
+
+    + bool FireUnlocked
+    + bool WaterUnlocked
+    + bool EarthUnlocked
+    + bool ThunderUnlocked
+
+    + int PotionNum
+    + int SupPotionNum
+
+    - CombatUIManager UIManager
+
+	+ void LoadEquipment(EquipmentData)
+	+ bool UnlockElement(GlobalEnums.Elements)
+	+ void ChangeSwordElement(GlobalEnums.Elements)
+	+ void TakeDamage(int)
+	+ void Heal(int)
+	+ int GetMaxHealth()
+	+ void AssignUI(CombatUIManager)
+}
+
+Equipement <|-- Singleton
+Equipement o-- CombatUIManager
+Equipement o-- GlobalEnums
+
+Class SceneLoader{
+	- string _lastLevelName
+
+	+ void Load(string)
+	+ void LoadLastLevel()
+	+ void LoadEncounter()
+
+}
+
+SceneLoader <|-- Singleton
+
+Class MainMenu{
+	+ void NewGame()
+	+ void LoadGame()
+	+ void QuitGame()
+}
+
+
+
+
+
+
+
+
+/'MovementStrategy <|-- SlingerMvtStrategy : is a >
+
+ComboStrategy <|-- SlingerComboStrategy : is a >
+
+
+Mortem "1" *-- "1" Rig : has >
+Mortem "1" *-- "1" MovementStrategy : has >
+Mortem "1" *-- "1" ComboStrategy : has >
+
+Rig "1" o-- "many" RigHook : has >
+Rig "1" *-- "1" ObjectPool : Takes from >
+
+RigHook "1" *-- "0,1" Chakram : follows <
+ObjectPool "1" o-- "many" Chakram : Hides >'/
+
+@enduml
